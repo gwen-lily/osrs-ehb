@@ -49,6 +49,29 @@ def read_ehb_rates(my_url: str):
     return ehb_dict
 
 
+def dict_to_ehb(high_scores_dict: dict):
+    ehb_dict = read_ehb_rates(ehb_url)
+
+    for key, val in ehb_dict.items():
+
+        try:
+            boss_dict = high_scores_dict[key]
+            boss_dict['ehb'] = boss_dict['kills'] / val
+
+        except KeyError as E:
+            high_scores_dict[key] = {}
+
+        except ZeroDivisionError as E:
+            boss_dict['ehb'] = 0
+
+    return high_scores_dict
+
+
+def raw_to_ehb(raw_high_score_text: str):
+    high_scores_dict = dict_to_ehb(read_high_scores(raw_high_score_text))
+    return high_scores_dict
+
+
 def main():
 
     with open(raw_file, mode='r') as f:
@@ -69,10 +92,9 @@ def main():
                 except ZeroDivisionError as E:
                     boss_dict['ehb'] = 0
 
-
             for key, val in high_scores_dict.items():
                 print(key, val)
 
 
 if __name__ == '__main__':
-    main()
+    main()  # reads raw data from sample file and prints out dictionary
